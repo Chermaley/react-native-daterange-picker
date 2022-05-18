@@ -17,37 +17,38 @@ import chevronL from "./assets/chevronL.png";
 import chevronR from "./assets/chevronR.png";
 
 const DateRangePicker = ({
-  moment,
-  startDate,
-  endDate,
-  onChange,
-  displayedDate,
-  minDate,
-  date,
-  maxDate,
-  range,
-  dayHeaderTextStyle,
-  dayHeaderStyle,
-  backdropStyle,
-  containerStyle,
-  selectedStyle,
-  selectedTextStyle,
-  disabledStyle,
-  dayStyle,
-  dayTextStyle,
-  disabledTextStyle,
-  headerTextStyle,
-  monthButtonsStyle,
-  headerStyle,
-  monthPrevButton,
-  monthNextButton,
-  children,
-  buttonContainerStyle,
-  buttonStyle,
-  buttonTextStyle,
-  presetButtons,
-  open,
-}) => {
+                           moment,
+                           startDate,
+                           endDate,
+                           onChange,
+                           displayedDate,
+                           minDate,
+                           date,
+                           maxDate,
+                           range,
+                           dayHeaderTextStyle,
+                           dayHeaderStyle,
+                           backdropStyle,
+                           containerStyle,
+                           selectedStyle,
+                           selectedTextStyle,
+                           disabledStyle,
+                           dayStyle,
+                           dayTextStyle,
+                           disabledTextStyle,
+                           headerTextStyle,
+                           monthButtonsStyle,
+                           headerStyle,
+                           monthPrevButton,
+                           monthNextButton,
+                           children,
+                           buttonContainerStyle,
+                           buttonStyle,
+                           buttonTextStyle,
+                           presetButtons,
+                           selectButton,
+                           open,
+                         }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [weeks, setWeeks] = useState([]);
   const [selecting, setSelecting] = useState(false);
@@ -120,18 +121,18 @@ const DateRangePicker = ({
 
   const selected = useCallback((_date, _startDate, _endDate, __date) => {
     return (
-      (_startDate &&
-        _endDate &&
-        _date.isBetween(_startDate, _endDate, null, "[]")) ||
-      (_startDate && _date.isSame(_startDate, "day")) ||
-      (__date && _date.isSame(__date, "day"))
+        (_startDate &&
+            _endDate &&
+            _date.isBetween(_startDate, _endDate, null, "[]")) ||
+        (_startDate && _date.isSame(_startDate, "day")) ||
+        (__date && _date.isSame(__date, "day"))
     );
   }, []);
 
   const disabled = useCallback((_date, _minDate, _maxDate) => {
     return (
-      (_minDate && _date.isBefore(_minDate, "day")) ||
-      (_maxDate && _date.isAfter(_maxDate, "day"))
+        (_minDate && _date.isBefore(_minDate, "day")) ||
+        (_maxDate && _date.isAfter(_maxDate, "day"))
     );
   }, []);
 
@@ -177,35 +178,35 @@ const DateRangePicker = ({
   };
 
   const select = useCallback(
-    (day) => {
-      let _date = _moment(displayedDate);
-      _date.set("date", day);
-      if (range) {
-        if (selecting) {
-          if (_date.isBefore(startDate, "day")) {
-            setSelecting(true);
-            onChange({ startDate: _date });
+      (day) => {
+        let _date = _moment(displayedDate);
+        _date.set("date", day);
+        if (range) {
+          if (selecting) {
+            if (_date.isBefore(startDate, "day")) {
+              setSelecting(true);
+              onChange({ startDate: _date });
+            } else {
+              setSelecting(!selecting);
+              onChange({ endDate: _date });
+            }
           } else {
             setSelecting(!selecting);
-            onChange({ endDate: _date });
+            onChange({
+              date: null,
+              endDate: null,
+              startDate: _date,
+            });
           }
         } else {
-          setSelecting(!selecting);
           onChange({
-            date: null,
+            date: _date,
+            startDate: null,
             endDate: null,
-            startDate: _date,
           });
         }
-      } else {
-        onChange({
-          date: _date,
-          startDate: null,
-          endDate: null,
-        });
-      }
-    },
-    [_moment, displayedDate, onChange, range, selecting, startDate]
+      },
+      [_moment, displayedDate, onChange, range, selecting, startDate]
   );
 
   useEffect(() => {
@@ -221,13 +222,13 @@ const DateRangePicker = ({
       for (let i = 0; i <= 6; ++i) {
         let day = _moment(displayedDate).weekday(i).format("dddd").substr(0, 2);
         _dayHeaders.push(
-          <Header
-            key={`dayHeader-${i}`}
-            day={day}
-            index={i}
-            dayHeaderTextStyle={dayHeaderTextStyle}
-            dayHeaderStyle={dayHeaderStyle}
-          />
+            <Header
+                key={`dayHeader-${i}`}
+                day={day}
+                index={i}
+                dayHeaderTextStyle={dayHeaderTextStyle}
+                dayHeaderStyle={dayHeaderStyle}
+            />
         );
       }
       return _dayHeaders;
@@ -240,41 +241,41 @@ const DateRangePicker = ({
       let startOfMonth = _moment(displayedDate).set("date", 1);
       let offset = startOfMonth.weekday();
       week = week.concat(
-        Array.from({ length: offset }, (x, i) => (
-          <Day empty key={"empty-" + i} />
-        ))
+          Array.from({ length: offset }, (x, i) => (
+              <Day empty key={"empty-" + i} />
+          ))
       );
       for (let i = 1; i <= daysInMonth; ++i) {
         let _date = _moment(displayedDate).set("date", i);
         let _selected = selected(_date, startDate, endDate, date);
         let _disabled = disabled(_date, minDate, maxDate);
         week.push(
-          <Day
-            key={`day-${i}`}
-            selectedStyle={selectedStyle}
-            selectedTextStyle={selectedTextStyle}
-            disabledStyle={disabledStyle}
-            dayStyle={dayStyle}
-            dayTextStyle={dayTextStyle}
-            disabledTextStyle={disabledTextStyle}
-            index={i}
-            selected={_selected}
-            disabled={_disabled}
-            select={select}
-          />
+            <Day
+                key={`day-${i}`}
+                selectedStyle={selectedStyle}
+                selectedTextStyle={selectedTextStyle}
+                disabledStyle={disabledStyle}
+                dayStyle={dayStyle}
+                dayTextStyle={dayTextStyle}
+                disabledTextStyle={disabledTextStyle}
+                index={i}
+                selected={_selected}
+                disabled={_disabled}
+                select={select}
+            />
         );
         if ((i + offset) % 7 === 0 || i === daysInMonth) {
           if (week.length < 7) {
             week = week.concat(
-              Array.from({ length: 7 - week.length }, (x, index) => (
-                <Day empty key={"empty-" + index} />
-              ))
+                Array.from({ length: 7 - week.length }, (x, index) => (
+                    <Day empty key={"empty-" + index} />
+                ))
             );
           }
           _weeks.push(
-            <View key={"weeks-" + i} style={styles.week}>
-              {week}
-            </View>
+              <View key={"weeks-" + i} style={styles.week}>
+                {week}
+              </View>
           );
           week = [];
         }
@@ -310,97 +311,102 @@ const DateRangePicker = ({
   ]);
 
   const node = (
-    <View>
-      <TouchableWithoutFeedback onPress={_onOpen}>
-        {children ? (
-          children
-        ) : (
-          <View>
-            <Text>Click me to show date picker</Text>
-          </View>
-        )}
-      </TouchableWithoutFeedback>
-    </View>
+      <View>
+        <TouchableWithoutFeedback onPress={_onOpen}>
+          {children ? (
+              children
+          ) : (
+              <View>
+                <Text>Click me to show date picker</Text>
+              </View>
+          )}
+        </TouchableWithoutFeedback>
+      </View>
   );
 
   return isOpen ? (
-    <>
-      <View style={mergedStyles.backdrop}>
-        <TouchableWithoutFeedback
-          style={styles.closeTrigger}
-          onPress={_onClose}
-        >
-          <View style={styles.closeContainer} />
-        </TouchableWithoutFeedback>
-        <View>
-          <View style={mergedStyles.container}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={previousMonth}>
-                {monthPrevButton || (
-                  <Image
-                    resizeMode="contain"
-                    style={mergedStyles.monthButtons}
-                    source={chevronL}
-                  ></Image>
-                )}
-              </TouchableOpacity>
-              <Text style={mergedStyles.headerText}>
-                {displayedDate.format("MMMM") +
+      <>
+        <View style={mergedStyles.backdrop}>
+          <TouchableWithoutFeedback
+              style={styles.closeTrigger}
+              onPress={_onClose}
+          >
+            <View style={styles.closeContainer} />
+          </TouchableWithoutFeedback>
+          <View>
+            <View style={mergedStyles.container}>
+              <View style={styles.header}>
+                <TouchableOpacity onPress={previousMonth}>
+                  {monthPrevButton || (
+                      <Image
+                          resizeMode="contain"
+                          style={mergedStyles.monthButtons}
+                          source={chevronL}
+                      ></Image>
+                  )}
+                </TouchableOpacity>
+                <Text style={mergedStyles.headerText}>
+                  {displayedDate.format("MMMM") +
                   " " +
                   displayedDate.format("YYYY")}
-              </Text>
-              <TouchableOpacity onPress={nextMonth}>
-                {monthNextButton || (
-                  <Image
-                    resizeMode="contain"
-                    style={mergedStyles.monthButtons}
-                    source={chevronR}
-                  />
-                )}
-              </TouchableOpacity>
-            </View>
-            <View style={styles.calendar}>
-              {dayHeaders && (
-                <View style={styles.dayHeaderContainer}>{dayHeaders}</View>
-              )}
-              {weeks}
-            </View>
-            {presetButtons && (
-              <View style={mergedStyles.buttonContainer}>
-                <Button
-                  buttonStyle={buttonStyle}
-                  buttonTextStyle={buttonTextStyle}
-                  onPress={today}
-                >
-                  Today
-                </Button>
-                {range && (
-                  <>
-                    <Button
-                      buttonStyle={buttonStyle}
-                      buttonTextStyle={buttonTextStyle}
-                      onPress={thisWeek}
-                    >
-                      This Week
-                    </Button>
-                    <Button
-                      buttonStyle={buttonStyle}
-                      buttonTextStyle={buttonTextStyle}
-                      onPress={thisMonth}
-                    >
-                      This Month
-                    </Button>
-                  </>
-                )}
+                </Text>
+                <TouchableOpacity onPress={nextMonth}>
+                  {monthNextButton || (
+                      <Image
+                          resizeMode="contain"
+                          style={mergedStyles.monthButtons}
+                          source={chevronR}
+                      />
+                  )}
+                </TouchableOpacity>
               </View>
-            )}
+              <View style={styles.calendar}>
+                {dayHeaders && (
+                    <View style={styles.dayHeaderContainer}>{dayHeaders}</View>
+                )}
+                {weeks}
+              </View>
+              {selectButton && (
+                  <View style={styles.selectButtonContainer}>
+                    {selectButton}
+                  </View>
+              )}
+              {presetButtons && (
+                  <View style={mergedStyles.buttonContainer}>
+                    <Button
+                        buttonStyle={buttonStyle}
+                        buttonTextStyle={buttonTextStyle}
+                        onPress={today}
+                    >
+                      Today
+                    </Button>
+                    {range && (
+                        <>
+                          <Button
+                              buttonStyle={buttonStyle}
+                              buttonTextStyle={buttonTextStyle}
+                              onPress={thisWeek}
+                          >
+                            This Week
+                          </Button>
+                          <Button
+                              buttonStyle={buttonStyle}
+                              buttonTextStyle={buttonTextStyle}
+                              onPress={thisMonth}
+                          >
+                            This Month
+                          </Button>
+                        </>
+                    )}
+                  </View>
+              )}
+            </View>
           </View>
         </View>
-      </View>
-      {node}
-    </>
+        {node}
+      </>
   ) : (
-    <>{node}</>
+      <>{node}</>
   );
 };
 
@@ -492,6 +498,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-evenly",
+  },
+  selectButtonContainer: {
+    marginHorizontal: 10,
+    marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: "row",
